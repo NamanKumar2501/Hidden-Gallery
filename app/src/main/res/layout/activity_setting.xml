@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F7B555"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/back_icon"
+        app:title="Setting"
+        app:titleMarginStart="8dp"
+        app:titleTextColor="@color/white" />
+
+    <LinearLayout
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:layout_below="@id/toolbar"
+        app:cardCornerRadius="8dp"
+        android:background="@color/white"
+        android:text="Security mode"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:layout_editor_absoluteX="74dp">
+
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Security mode"
+            android:layout_marginStart="30dp"
+            android:layout_gravity="center_vertical"
+            android:textSize="18sp" />
+
+        <Switch
+            android:id="@+id/security_switch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="40dp"
+            android:gravity="center"
+            />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/textView4"
+        android:background="#CEA1A1A1"/>
+
+
+</RelativeLayout>
