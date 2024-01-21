@@ -104,8 +104,6 @@ class HomeActivity :  AppCompatActivity(), NoteAdapter.MyOnClickListener {
     }
 
 
-
-
     private fun getUserData() {
 
         mAuth = FirebaseAuth.getInstance()

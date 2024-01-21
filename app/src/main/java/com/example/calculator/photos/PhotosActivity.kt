@@ -52,20 +52,19 @@ class PhotosActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, 71)
-
         }
 
         binding.toolbar.setNavigationOnClickListener(View.OnClickListener {
             val main = Intent(applicationContext, LockerActivity::class.java)
             startActivity(main)
-        }) 
+        })
 
         imageList = arrayListOf()
 
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
-
         val databaseReference =  FirebaseDatabase.getInstance().getReference(uid).child("images/")
+
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 imageList.clear()
@@ -78,7 +77,7 @@ class PhotosActivity : AppCompatActivity() {
                     }
 
                 }
-                  binding.recyclerview.layoutManager = LinearLayoutManager(this@PhotosActivity)
+                binding.recyclerview.layoutManager = LinearLayoutManager(this@PhotosActivity)
                 binding.recyclerview.adapter = ShowImageAdapter(imageList,this@PhotosActivity)
 
 
@@ -188,7 +187,6 @@ class PhotosActivity : AppCompatActivity() {
         val mime = MimeTypeMap.getSingleton()
         return mime.getExtensionFromMimeType(cR.getType(uri))
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

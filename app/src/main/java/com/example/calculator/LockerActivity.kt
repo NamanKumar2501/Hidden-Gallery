@@ -31,8 +31,6 @@ class LockerActivity : AppCompatActivity() {
         prefManager = PrefManager(this)
 
 
-
-
         binding.photos.setOnClickListener {
             val intent = Intent(this, PhotosActivity::class.java)
             startActivity(intent)

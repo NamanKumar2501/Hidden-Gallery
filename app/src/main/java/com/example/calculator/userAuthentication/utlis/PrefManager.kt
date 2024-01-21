@@ -9,7 +9,7 @@ class PrefManager(context: Context) {
     private val editor:SharedPreferences.Editor
 
     init {
-        sharedPref = context.getSharedPreferences("Aditya",Context.MODE_PRIVATE)
+        sharedPref = context.getSharedPreferences("Naman",Context.MODE_PRIVATE)
         editor = sharedPref.edit()
     }
 

@@ -2,38 +2,22 @@ package com.example.calculator.videos
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.calculator.LockerActivity
 import com.example.calculator.R
 import com.example.calculator.databinding.ActivityVideosBinding
-import com.example.calculator.photos.ImageModel
-import com.example.calculator.photos.ShowGridViewImageAdapter
-import com.example.calculator.photos.ShowImageAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
 class VideosActivity : AppCompatActivity(), VideoItemClickListener  {
@@ -42,7 +26,6 @@ class VideosActivity : AppCompatActivity(), VideoItemClickListener  {
     private lateinit var recyclerView: RecyclerView
     private lateinit var videoAdapter: VideoAdapter
     private lateinit var videoList: ArrayList<VideoModel>
-
 
     @SuppressLint("MissingInflatedId", "WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +37,6 @@ class VideosActivity : AppCompatActivity(), VideoItemClickListener  {
         recyclerView.layoutManager = LinearLayoutManager(this)
         videoAdapter = VideoAdapter(mutableListOf(),this,this) // Initialize with an empty list initially
         recyclerView.adapter = videoAdapter
-
 
         fetchVideoItemsFromFirebase()
 
@@ -119,7 +101,6 @@ class VideosActivity : AppCompatActivity(), VideoItemClickListener  {
         val uid = FirebaseAuth.getInstance().uid ?: return
 
         val videoRef = FirebaseStorage.getInstance().getReference(uid).child("videos/$originalFileName")
-
 
             val processDialog = ProgressDialog(this@VideosActivity)
             processDialog.setMessage("Video Uploading")

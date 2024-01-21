@@ -7,16 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Switch
 import android.widget.Toast
+import android.widget.Toolbar
 
 class SettingActivity : AppCompatActivity() {
     private var isFeatureEnabled = false // Default: feature disabled
     private lateinit var sharedPreferences: SharedPreferences
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
 
+        val toolBarBackIcon = findViewById<Toolbar>(R.id.setting_toolbar)
+
+        toolBarBackIcon.setNavigationOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            // Code to be executed when the navigation icon is clicked
+           // onBackPressed() // or any other action you want to perform
+        }
 
         sharedPreferences = getSharedPreferences("SwitchState", Context.MODE_PRIVATE)
         val switchButton = findViewById<Switch>(R.id.security_switch)
