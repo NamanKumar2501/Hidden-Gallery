@@ -20,11 +20,11 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/setting_toolbar"
         app:cardCornerRadius="8dp"
         android:background="@color/white"
         android:text="Security mode"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/setting_toolbar"
         tools:layout_editor_absoluteX="74dp">
 
 

@@ -1,5 +1,6 @@
 package com.example.calculator
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -13,17 +14,18 @@ class SettingActivity : AppCompatActivity() {
     private var isFeatureEnabled = false // Default: feature disabled
     private lateinit var sharedPreferences: SharedPreferences
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
 
-        val toolBarBackIcon = findViewById<Toolbar>(R.id.setting_toolbar)
+        val toolBarBackIcon = findViewById<androidx.appcompat.widget.Toolbar>(R.id.setting_toolbar)
 
         toolBarBackIcon.setNavigationOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
             // Code to be executed when the navigation icon is clicked
-           // onBackPressed() // or any other action you want to perform
+            onBackPressed() // or any other action you want to perform
         }
+
 
         sharedPreferences = getSharedPreferences("SwitchState", Context.MODE_PRIVATE)
         val switchButton = findViewById<Switch>(R.id.security_switch)
