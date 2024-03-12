@@ -38,10 +38,10 @@ class SettingActivity : AppCompatActivity() {
 
             if (isChecked) {
                 Toast.makeText(this, "Switch On", Toast.LENGTH_SHORT).show()
-                // Switch button on hai
+                // Switch button on
             } else {
                 Toast.makeText(this, "Switch Off", Toast.LENGTH_SHORT).show()
-                // Switch button off hai
+                // Switch button off
             }
         }
 
