@@ -15,6 +15,7 @@ import com.example.calculator.R
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -66,8 +67,14 @@ class ShowGridViewImageAdapter(
     }
 
     private fun showDialog(imageModel: ImageModel) {
-        val firebaseStorage = FirebaseStorage.getInstance().getReference("images")
-        val databaseRef = FirebaseDatabase.getInstance().getReference("images")
+
+        val uid = FirebaseAuth.getInstance().currentUser!!.uid
+
+
+        val firebaseStorage =
+            FirebaseStorage.getInstance().getReference(uid).child("images/")
+        val databaseRef =
+            FirebaseDatabase.getInstance().getReference(uid).child("images/")
 
         MaterialAlertDialogBuilder(context)
             .setTitle("Delete Image")
@@ -85,6 +92,7 @@ class ShowGridViewImageAdapter(
 
                             databaseRef.child(imageModel.imageId.toString()).removeValue()
                             imageList.remove(imageModel)
+                            notifyDataSetChanged();
 
                         }
                     })
