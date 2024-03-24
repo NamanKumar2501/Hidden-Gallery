@@ -37,8 +37,11 @@ class UpdateNoteActivity : AppCompatActivity() {
             val note = noteup.text.toString()
 
             val data = Data(title,note, id as String)
+            val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
-            val reference = FirebaseDatabase.getInstance().reference.child("note")
+            val reference = FirebaseDatabase.getInstance().getReference(uid).child("note/")
+
+
             reference.child(id).setValue(data).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Updated successfully", Toast.LENGTH_SHORT).show()
@@ -53,7 +56,10 @@ class UpdateNoteActivity : AppCompatActivity() {
 
         deletebtn.setOnClickListener {
 
-            val reference = FirebaseDatabase.getInstance().reference.child("note")
+            val uid = FirebaseAuth.getInstance().currentUser!!.uid
+
+            val reference = FirebaseDatabase.getInstance().getReference(uid).child("note/")
+
             reference.child(id as String).removeValue().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Deleted successfully", Toast.LENGTH_SHORT).show()
