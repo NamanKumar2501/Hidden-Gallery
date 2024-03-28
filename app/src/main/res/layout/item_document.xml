@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="#ECE8E8"
+    android:id="@+id/document_item"
     android:layout_margin="2dp"
     android:padding="16dp">
 
@@ -21,4 +22,5 @@
         android:textSize="14sp"
         android:visibility="gone"
         android:textColor="#888888"/>
+
 </LinearLayout>
