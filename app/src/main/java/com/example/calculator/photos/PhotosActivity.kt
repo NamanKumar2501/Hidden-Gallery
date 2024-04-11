@@ -48,11 +48,20 @@ class PhotosActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        binding.addImage.setOnClickListener{
-            val intent = Intent(Intent.ACTION_PICK)
+//        binding.addImage.setOnClickListener{
+//            val intent = Intent(Intent.ACTION_PICK)
+//            intent.type = "image/*"
+//            startActivityForResult(intent, 71)
+//        }
+
+
+        binding.addImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
-            startActivityForResult(intent, 71)
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Enable multiple image selection
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 71)
         }
+
 
         binding.toolbar.setNavigationOnClickListener(View.OnClickListener {
             val main = Intent(applicationContext, LockerActivity::class.java)
@@ -104,68 +113,122 @@ class PhotosActivity : AppCompatActivity() {
 
     }
 
+    // changes
+
     private fun uploadFile(uri: Uri) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        val originalFileName = getFileName(uri)
+        val firebaseStorage =
+            FirebaseStorage.getInstance().getReference(uid).child("images/$originalFileName")
+        val databaseRef =
+            FirebaseDatabase.getInstance().getReference(uid).child("images/")
 
-        if (uri != null) {
-            val originalFileName = getFileName(uri)
-            val firebaseStorage =
-                FirebaseStorage.getInstance().getReference(uid).child("images/$originalFileName")
-            val databaseRef =
-                FirebaseDatabase.getInstance().getReference(uid).child("images/")
+        val storageRef = firebaseStorage.child(
+            System.currentTimeMillis().toString() + "." + getFileExtension(uri)
+        )
 
-            val storageRef = firebaseStorage.child(
-                System.currentTimeMillis().toString() + "." + getFileExtension(this.uri)
-            )
+        val processDialog = ProgressDialog(this@PhotosActivity)
+        processDialog.setMessage("Uploading Photos...")
+        processDialog.setCancelable(false)
+        processDialog.show()
 
-            val processDialog = ProgressDialog(this@PhotosActivity)
-            processDialog.setMessage("Photo Uploading")
-            processDialog.setCancelable(false)
-            processDialog.show()
+        storageRef.putFile(uri)
+            .addOnSuccessListener { taskSnapshot ->
+                processDialog.dismiss()
+                Toast.makeText(
+                    this@PhotosActivity,
+                    "Upload Image Successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            storageRef.putFile(this.uri)
-                .addOnSuccessListener {
-
-                    Log.i(ContentValues.TAG, "onSuccess Main: $it")
-                    processDialog.dismiss()
-                    Toast.makeText(
-                        this@PhotosActivity,
-                        "Upload Image Successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-
-                    val urlTask: Task<Uri> = it.storage.downloadUrl
-                    while (!urlTask.isSuccessful);
-                    val downloadUrl: Uri = urlTask.result
-                    Log.i(ContentValues.TAG, "onSuccess: $downloadUrl")
-
-                    val imageModel =
-                        ImageModel(databaseRef.push().key, originalFileName, downloadUrl.toString())
-                    val uploadId = imageModel.imageId
-
+                // Get download URL
+                storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                    val imageModel = ImageModel(null, originalFileName, downloadUrl.toString())
+                    val uploadId = databaseRef.push().key
                     if (uploadId != null) {
                         databaseRef.child(uploadId).setValue(imageModel)
                     }
-
-
-        }
-
-            .addOnFailureListener {
-
-                Toast.makeText(this@PhotosActivity, "Failed to Upload Image", Toast.LENGTH_SHORT)
-                    .show()
-                processDialog.dismiss()
-
-            }
-                .addOnProgressListener { taskSnapshot -> //displaying the upload progress
-                    val progress =
-                        100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount
-                    processDialog.setMessage("Uploaded " + progress.toInt() + "%...")
                 }
+            }
+            .addOnFailureListener { e ->
+                processDialog.dismiss()
+                Toast.makeText(this@PhotosActivity, "Failed to Upload Image", Toast.LENGTH_SHORT).show()
+                Log.e(ContentValues.TAG, "Upload failed: ${e.message}", e)
+            }
+            .addOnProgressListener { taskSnapshot ->
+                val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount
+                processDialog.setMessage("Uploaded " + progress.toInt() + "%...")
+            }
     }
 
-    }
+
+    /*
+     private fun uploadFile(uri: Uri) {
+         val uid = FirebaseAuth.getInstance().currentUser!!.uid
+
+         if (uri != null) {
+             val originalFileName = getFileName(uri)
+             val firebaseStorage =
+                 FirebaseStorage.getInstance().getReference(uid).child("images/$originalFileName")
+             val databaseRef =
+                 FirebaseDatabase.getInstance().getReference(uid).child("images/")
+
+             val storageRef = firebaseStorage.child(
+                 System.currentTimeMillis().toString() + "." + getFileExtension(this.uri)
+             )
+
+             val processDialog = ProgressDialog(this@PhotosActivity)
+             processDialog.setMessage("Photo Uploading")
+             processDialog.setCancelable(false)
+             processDialog.show()
+
+             storageRef.putFile(this.uri)
+                 .addOnSuccessListener {
+
+                     Log.i(ContentValues.TAG, "onSuccess Main: $it")
+                     processDialog.dismiss()
+                     Toast.makeText(
+                         this@PhotosActivity,
+                         "Upload Image Successfully",
+                         Toast.LENGTH_SHORT
+                     ).show()
+
+
+                     val urlTask: Task<Uri> = it.storage.downloadUrl
+                     while (!urlTask.isSuccessful);
+                     val downloadUrl: Uri = urlTask.result
+                     Log.i(ContentValues.TAG, "onSuccess: $downloadUrl")
+
+                     val imageModel =
+                         ImageModel(databaseRef.push().key, originalFileName, downloadUrl.toString())
+                     val uploadId = imageModel.imageId
+
+                     if (uploadId != null) {
+                         databaseRef.child(uploadId).setValue(imageModel)
+                     }
+
+
+         }
+
+             .addOnFailureListener {
+
+                 Toast.makeText(this@PhotosActivity, "Failed to Upload Image", Toast.LENGTH_SHORT)
+                     .show()
+                 processDialog.dismiss()
+
+             }
+                 .addOnProgressListener { taskSnapshot -> //displaying the upload progress
+                     val progress =
+                         100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount
+                     processDialog.setMessage("Uploaded " + progress.toInt() + "%...")
+                 }
+     }
+
+     }
+
+ */
+
+
 
     @SuppressLint("Range")
     private fun getFileName(uri: Uri): String {
@@ -188,25 +251,50 @@ class PhotosActivity : AppCompatActivity() {
         return mime.getExtensionFromMimeType(cR.getType(uri))
     }
 
+    // changes
+    private val selectedImages = mutableListOf<Uri>() // List to store selected URIs
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 71 && resultCode == Activity.RESULT_OK) {
-            if(data == null || data.data == null){
-                return
-            }
-
-            uri = data.data!!
-
-            uploadFile(uri)
-            try {
-                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-
-            } catch (e: IOException) {
-                e.printStackTrace()
+            if (data == null || data.clipData == null) {
+                // Single selection (fallback if clipData is null)
+                data?.data?.let { uri ->
+                    selectedImages.add(uri)
+                    uploadFile(uri)
+                }
+            } else {
+                // Multiple selection
+                val clipData = data.clipData
+                for (i in 0 until clipData!!.itemCount) {
+                    val uri = clipData.getItemAt(i).uri
+                    selectedImages.add(uri)
+                    uploadFile(uri) // Upload each selected image
+                }
             }
         }
     }
+
+
+
+    /*  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+          super.onActivityResult(requestCode, resultCode, data)
+          if (requestCode == 71 && resultCode == Activity.RESULT_OK) {
+              if(data == null || data.data == null){
+                  return
+              }
+
+              uri = data.data!!
+
+              uploadFile(uri)
+              try {
+                  val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+
+              } catch (e: IOException) {
+                  e.printStackTrace()
+              }
+          }
+      }*/
 
 
 
@@ -239,10 +327,6 @@ class PhotosActivity : AppCompatActivity() {
 
                 true
             }
-           /* R.id.delete_all ->{
-                Toast.makeText(this@PhotosActivity,"Delete all clicked", Toast.LENGTH_SHORT).show();
-                return true
-            }*/
 
             else -> super.onOptionsItemSelected(item)
         }

@@ -26,13 +26,7 @@ class ShowImageAdapter(
     private val context: Context
 ): RecyclerView.Adapter<ShowImageAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
 
-        val image :ImageView = view.findViewById(R.id.imageView)
-        val imageName :TextView = view.findViewById(R.id.textView)
-        val listview_layout :ConstraintLayout = view.findViewById(R.id.listview_layout)
-
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_item,parent,false)
@@ -56,16 +50,16 @@ class ShowImageAdapter(
             .get()
             .load(currentImage.url)
             .into(holder.image)
-/*
-            Glide
-                .with(Context)
-            .load(imageModel.url)
-            .into(holder.image)*/
 
         holder.listview_layout.setOnLongClickListener(OnLongClickListener {
             showDialog(currentImage)
             true
         })
+
+
+       /* holder.itemView.setOnClickListener {
+            // Handle item click
+        }*/
 
 
     }
@@ -114,6 +108,16 @@ class ShowImageAdapter(
 
             return imageList.size
     }
+
+    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
+
+        val image :ImageView = view.findViewById(R.id.imageView)
+        val imageName :TextView = view.findViewById(R.id.textView)
+        val listview_layout :ConstraintLayout = view.findViewById(R.id.listview_layout)
+
+    }
+
+
 }
 
 
