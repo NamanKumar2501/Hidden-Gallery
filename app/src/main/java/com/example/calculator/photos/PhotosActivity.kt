@@ -8,7 +8,10 @@ import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+
+
+
+
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Menu
@@ -30,6 +33,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 import java.io.IOException
 
 class PhotosActivity : AppCompatActivity() {
@@ -114,7 +122,6 @@ class PhotosActivity : AppCompatActivity() {
     }
 
     // changes
-
     private fun uploadFile(uri: Uri) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         val originalFileName = getFileName(uri)
@@ -269,7 +276,7 @@ class PhotosActivity : AppCompatActivity() {
                 for (i in 0 until clipData!!.itemCount) {
                     val uri = clipData.getItemAt(i).uri
                     selectedImages.add(uri)
-                    uploadFile(uri) // Upload each selected image
+                    uploadFile(uri)
                 }
             }
         }

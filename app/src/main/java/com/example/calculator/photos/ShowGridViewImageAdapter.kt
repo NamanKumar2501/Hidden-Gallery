@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.calculator.R
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -19,6 +20,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ShowGridViewImageAdapter(
     private val imageList: ArrayList<ImageModel>,
@@ -47,10 +52,32 @@ class ShowGridViewImageAdapter(
             holder.itemView.context.startActivity(intent)
         }
 
-        Picasso
+       /* Picasso
             .get()
             .load(currentImage.url)
-            .into(holder.image)
+            .into(holder.image)*/
+
+
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                // Execute image loading in IO dispatcher
+                val bitmap = withContext(Dispatchers.IO) {
+                    Glide.with(holder.itemView.context)
+                        .asBitmap()
+                        .load(currentImage.url)
+                        .submit()
+                        .get()
+                }
+
+                // Update ImageView with the loaded bitmap using main dispatcher
+                holder.image.setImageBitmap(bitmap)
+            } catch (e: Exception) {
+                e.printStackTrace()
+//                holder.image.setImageResource(R.drawable.placeholder_image)
+            }
+        }
+
+
         /*
                     Glide
                         .with(Context)
